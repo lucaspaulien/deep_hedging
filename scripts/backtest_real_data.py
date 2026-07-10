@@ -45,20 +45,27 @@ TRADING_DAYS_PER_YEAR = 252
 
 
 def parse_args():
-    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
     p.add_argument("--checkpoint", type=str, required=True,
                     help="trained policy checkpoint (.npz) from train_and_evaluate.py --checkpoint")
-    p.add_argument("--ticker", type=str, default="SPY", help="Yahoo Finance ticker for the underlying")
+    p.add_argument("--ticker", type=str, default="SPY",
+                    help="Yahoo Finance ticker for the underlying")
     p.add_argument("--history-period", type=str, default="10y",
                     help="yfinance `period` for the daily close history the returns are drawn from")
-    p.add_argument("--K-moneyness", type=float, default=1.0, help="strike as a multiple of S0 (bootstrap start price)")
-    p.add_argument("--n-steps", type=int, default=30, help="rebalancing dates per bootstrapped path (trading days)")
-    p.add_argument("--cost-rate", type=float, default=0.01, help="should match the cost the checkpoint was trained for")
+    p.add_argument("--K-moneyness", type=float, default=1.0,
+                    help="strike as a multiple of S0 (bootstrap start price)")
+    p.add_argument("--n-steps", type=int, default=30,
+                    help="rebalancing dates per bootstrapped path (trading days)")
+    p.add_argument("--cost-rate", type=float, default=0.01,
+                    help="should match the cost the checkpoint was trained for")
     p.add_argument("--lam", type=float, default=8.0)
-    p.add_argument("--n-bootstrap", type=int, default=20000, help="number of bootstrapped paths to evaluate on")
+    p.add_argument("--n-bootstrap", type=int, default=20000,
+                    help="number of bootstrapped paths to evaluate on")
     p.add_argument("--block-len", type=int, default=5,
-                    help="stationary block-bootstrap block length in trading days (preserves short-range "
-                         "autocorrelation / vol clustering within a block)")
+                    help="stationary block-bootstrap block length in trading days (preserves "
+                         "short-range autocorrelation / vol clustering within a block)")
     p.add_argument("--seed", type=int, default=0)
     return p.parse_args()
 
@@ -71,7 +78,7 @@ def fetch_daily_log_returns(ticker: str, period: str) -> np.ndarray:
             "yfinance is not installed. This is an optional dependency of this "
             "bonus script only:\n    pip install yfinance\n"
             f"(original error: {e})"
-        )
+        ) from e
     df = yf.download(ticker, period=period, progress=False, auto_adjust=True)
     if df.empty:
         raise SystemExit(
@@ -105,7 +112,9 @@ def block_bootstrap_paths(log_returns: np.ndarray, n_paths: int, n_steps: int,
     """
     n_hist = len(log_returns)
     if block_len >= n_hist:
-        raise SystemExit(f"block_len={block_len} must be smaller than the {n_hist} available historical returns.")
+        raise SystemExit(
+            f"block_len={block_len} must be smaller than the {n_hist} available historical returns."
+        )
     n_blocks_needed = -(-n_steps // block_len)  # ceil division
     starts = rng.integers(0, n_hist - block_len, size=(n_paths, n_blocks_needed))
     offsets = np.arange(block_len)
@@ -120,7 +129,8 @@ def block_bootstrap_paths(log_returns: np.ndarray, n_paths: int, n_steps: int,
 
 def main():
     args = parse_args()
-    print(f"downloading {args.ticker} daily history (period={args.history_period}) from Yahoo Finance...")
+    print(f"downloading {args.ticker} daily history (period={args.history_period}) "
+          "from Yahoo Finance...")
     log_returns = fetch_daily_log_returns(args.ticker, args.history_period)
     ann_vol = float(log_returns.std(ddof=1) * np.sqrt(TRADING_DAYS_PER_YEAR))
     print(f"got {len(log_returns)} daily log-returns; realized annualized vol = {ann_vol:.1%}")
@@ -135,9 +145,11 @@ def main():
     # with the checkpoint's own (saved) shapes.
     policy = MLPPolicy(n_features=3, hidden_sizes=(1,), seed=0)
     policy, _adam, trained_epochs = load_checkpoint(args.checkpoint, policy)
-    print(f"loaded policy from {args.checkpoint} (trained for {trained_epochs} epochs on simulated GBM)")
+    print(f"loaded policy from {args.checkpoint} "
+          f"(trained for {trained_epochs} epochs on simulated GBM)")
 
-    T_mat = args.n_steps / TRADING_DAYS_PER_YEAR  # trading-day convention, matches the bootstrapped daily blocks
+    # trading-day convention, matches the bootstrapped daily blocks
+    T_mat = args.n_steps / TRADING_DAYS_PER_YEAR
     r = 0.0
 
     deltas_dh = rollout_deltas_no_grad(paths, policy, K, T_mat)

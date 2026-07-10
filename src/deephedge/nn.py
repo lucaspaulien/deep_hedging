@@ -50,7 +50,7 @@ class MLPPolicy:
                  output_scale: float = 1.5):
         rng = np.random.default_rng(seed)
         sizes = [n_features] + list(hidden_sizes) + [1]
-        self.Ws = [_xavier(rng, fin, fout) for fin, fout in zip(sizes[:-1], sizes[1:])]
+        self.Ws = [_xavier(rng, fin, fout) for fin, fout in zip(sizes[:-1], sizes[1:], strict=True)]
         self.bs = [np.zeros(fout) for fout in sizes[1:]]
         self.output_scale = float(output_scale)
         self.n_layers = len(self.Ws)
@@ -126,7 +126,7 @@ class Adam:
     def step(self, params: list, grads: list) -> list:
         self.t += 1
         new_params = []
-        for i, (p, g) in enumerate(zip(params, grads)):
+        for i, (p, g) in enumerate(zip(params, grads, strict=True)):
             self.m[i] = self.beta1 * self.m[i] + (1 - self.beta1) * g
             self.v[i] = self.beta2 * self.v[i] + (1 - self.beta2) * (g * g)
             m_hat = self.m[i] / (1 - self.beta1 ** self.t)

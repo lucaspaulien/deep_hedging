@@ -7,7 +7,7 @@ market, not from mini-batching a fixed dataset.
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 import numpy as np
 

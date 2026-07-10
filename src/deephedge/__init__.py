@@ -5,12 +5,12 @@ risk measure of the hedging P&L under proportional transaction costs,
 via backprop-through-time, and compare it against the classical
 Black-Scholes delta-hedge baseline.
 """
-from .market import simulate_gbm_paths, bs_call_price, bs_call_delta
-from .nn import MLPPolicy, Adam
+from .baseline import bs_delta_hedge_deltas, no_hedge_deltas
 from .hedge import forward_and_grad, rollout_deltas_no_grad
+from .market import bs_call_delta, bs_call_price, simulate_gbm_paths
+from .nn import Adam, MLPPolicy
 from .pnl import simulate_hedge_loss
 from .risk import entropic_risk, entropic_risk_grad_weights
-from .baseline import bs_delta_hedge_deltas, no_hedge_deltas
 
 __all__ = [
     "simulate_gbm_paths",

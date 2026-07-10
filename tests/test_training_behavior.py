@@ -19,8 +19,6 @@ Both tests use tiny, fast settings so the full suite runs in seconds;
 they are still real training runs on freshly simulated paths, not
 mocked.
 """
-import numpy as np
-
 from deephedge.baseline import bs_delta_hedge_deltas
 from deephedge.hedge import rollout_deltas_no_grad
 from deephedge.market import simulate_gbm_paths

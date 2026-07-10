@@ -19,8 +19,6 @@ import os
 import sys
 import time
 
-import numpy as np
-
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from deephedge.baseline import bs_delta_hedge_deltas, no_hedge_deltas  # noqa: E402
@@ -29,7 +27,12 @@ from deephedge.market import simulate_gbm_paths  # noqa: E402
 from deephedge.nn import MLPPolicy  # noqa: E402
 from deephedge.pnl import simulate_hedge_loss  # noqa: E402
 from deephedge.risk import entropic_risk  # noqa: E402
-from deephedge.train import TrainConfig, load_checkpoint, save_checkpoint, train_policy  # noqa: E402
+from deephedge.train import (  # noqa: E402
+    TrainConfig,
+    load_checkpoint,
+    save_checkpoint,
+    train_policy,
+)
 
 
 def parse_args():
