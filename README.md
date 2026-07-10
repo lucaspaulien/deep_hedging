@@ -11,14 +11,16 @@ re-hedging to the classical Black-Scholes delta, which is only optimal in a
 frictionless world.
 
 The network, the optimizer, and the backpropagation-through-time (BPTT) that
-trains it are all hand-written in numpy (no PyTorch/TensorFlow/JAX). That is
-partly a sandbox constraint (no package index access while building this),
-and partly the point: the interesting part of "Deep Hedging" is exactly the
-recurrent structure of the training problem -- the same network is applied at
-every rebalancing date, its own previous decision feeds back in as an input,
-and the loss only closes at maturity. Every gradient this repo produces is
-checked against plain finite differences in `tests/test_hedge_bptt.py`; that
-test, not this README, is the actual proof it's correct.
+trains it are all hand-written in numpy (no PyTorch/TensorFlow/JAX) -- a
+deliberate choice, since the interesting part of "Deep Hedging" is exactly
+the recurrent structure of the training problem: the same network is applied
+at every rebalancing date, its own previous decision feeds back in as an
+input, and the loss only closes at maturity. Working out that gradient by
+hand is a genuinely different (and more revealing) exercise than calling
+`.backward()`; see "Why the network is trained by hand" below for the full
+reasoning. Every gradient this repo produces is checked against plain
+finite differences in `tests/test_hedge_bptt.py`; that test, not this
+README, is the actual proof it's correct.
 
 ## Headline result
 
@@ -117,11 +119,19 @@ optimization variable, which keeps the hand-written backward pass tractable.
 
 ## Why the network is trained "by hand" (no autodiff framework)
 
-This project was built in a sandbox with no access to PyPI, so
-`pip install torch` was never an option -- but even setting that aside,
-writing the backward pass by hand here is a genuinely different exercise
-than calling `.backward()`. The policy network is applied at every
-rebalancing date with **shared weights**, and `delta_{t-1}` is simultaneously:
+Nothing here calls `.backward()`. The forward pass, the backward pass, and
+the Adam optimizer are all implemented from scratch in numpy -- a deliberate
+choice, not a missing feature. Any PyTorch/TensorFlow/JAX model gets its
+gradients for free from an autodiff engine; the point of this repo is to
+show the derivation and the code *underneath* that engine, for exactly the
+case where it stops being trivial: a **weight-shared recurrent policy**.
+(This project also happened to start in a network-isolated sandbox with no
+PyPI access, so `pip install torch` genuinely wasn't on the table at the
+time -- but that's a secondary, historical detail, not the reason this
+approach is worth showing.)
+
+The policy network is applied at every rebalancing date with shared
+weights, and `delta_{t-1}` is simultaneously:
 
 1. an algebraic term in the trade at date `t-1` (`trade_t = delta_t -
    delta_{t-1}`), and
