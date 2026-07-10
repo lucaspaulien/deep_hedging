@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "deephedge"
+version = "0.1.0"
+description = "Dependency-free (numpy-only) replication of Deep Hedging (Buehler et al., 2019): a neural hedging policy trained by backprop-through-time to minimize the entropic risk of hedging P&L under transaction costs, benchmarked against Black-Scholes delta hedging."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Lucas Paulien" }]
+keywords = ["quantitative-finance", "deep-hedging", "options", "risk-management", "neural-networks", "monte-carlo"]
+dependencies = [
+    "numpy>=1.24",
+]
+
+[project.optional-dependencies]
+plot = ["matplotlib>=3.7"]
+dev = ["pytest>=7.4", "matplotlib>=3.7"]
+realdata = ["yfinance>=0.2"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
