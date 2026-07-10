@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""OPTIONAL, network-dependent bonus script: evaluate an ALREADY-TRAINED
+r"""OPTIONAL, network-dependent bonus script: evaluate an ALREADY-TRAINED
 deep hedging policy (and the Black-Scholes delta baseline) on REAL
 historical S&P 500 / SPY daily returns, via a stationary block bootstrap,
 instead of the simulated GBM paths used for training.

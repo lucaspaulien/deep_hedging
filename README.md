@@ -1,5 +1,8 @@
 # Deep Hedging
 
+[![CI](https://github.com/lucaspaulien/deep_hedging/actions/workflows/ci.yml/badge.svg)](https://github.com/lucaspaulien/deep_hedging/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 A from-scratch, dependency-free (numpy-only) replication of the core idea in
 **Buehler, Gonon, Teichmann & Wood (2019), "Deep Hedging"**: train a neural
 network to hedge a European option under proportional transaction costs by

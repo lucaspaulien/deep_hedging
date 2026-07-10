@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Train a deep hedging policy and compare it against the classical
+r"""Train a deep hedging policy and compare it against the classical
 Black-Scholes delta-hedge baseline (and a naive "never hedge" floor) on
 a fresh, out-of-sample set of simulated paths.
 
