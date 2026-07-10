@@ -6,6 +6,7 @@ market, not from mini-batching a fixed dataset.
 """
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass, field
 
 import numpy as np
@@ -72,6 +73,9 @@ def train_policy(policy: MLPPolicy, cfg: TrainConfig, verbose_every: int = 0,
 
 
 def save_checkpoint(path: str, policy: MLPPolicy, adam: Adam, epoch: int):
+    parent = os.path.dirname(path)
+    if parent:
+        os.makedirs(parent, exist_ok=True)
     flat = policy.get_params()
     n = policy.n_layers
     np.savez(
